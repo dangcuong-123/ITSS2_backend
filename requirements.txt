@@ -1,0 +1,6 @@
+# logging
+flask
+gunicorn
+flask-restx
+flask-cors
+# sqlite
