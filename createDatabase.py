@@ -4,22 +4,32 @@ con = sqlite3.connect('database.db')
 
 cur = con.cursor()
 
-cur.execute("DROP TABLE IF EXISTS products;")
-cur.execute('''CREATE TABLE IF NOT EXISTS products (ID INTEGER PRIMARY KEY AUTOINCREMENT, 
+cur.execute("DROP TABLE IF EXISTS user;")
+cur.execute('''CREATE TABLE IF NOT EXISTS user (user_id INTEGER PRIMARY KEY AUTOINCREMENT, 
                                     name varchar(50) DEFAULT NULL,
-                                    detail varchar(3000) DEFAULT NULL, 
-                                    brand varchar(50) DEFAULT NULL,
-                                    price float DEFAULT NULL, 
-                                    category_id INTEGER DEFAULT NULL,   
-                                    image varchar(200) DEFAULT NULL,   
-                                    size varchar(50) DEFAULT NULL, 
-                                    video varchar(200) DEFAULT NULL, 
-                                    color varchar(50) DEFAULT NULL, 
-                                    quantity int(5) DEFAULT 0);''')
+                                    email varchar(3000) DEFAULT NULL, 
+                                    password varchar(50) DEFAULT NULL,
+                                    image_url varchar(3000) DEFAULT NULL);''')
 
-cur.execute("DROP TABLE IF EXISTS category;")
-cur.execute('''CREATE TABLE IF NOT EXISTS category (ID INTEGER PRIMARY KEY AUTOINCREMENT, 
-                                    name varchar(50) DEFAULT NULL);''')
+cur.execute("DROP TABLE IF EXISTS comment;")
+cur.execute('''CREATE TABLE IF NOT EXISTS comment (comment_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                    user_id INTEGER DEFAULT NULL,
+                                    comment_content varchar(3000) DEFAULT NULL,
+                                    comment_time timestamp DEFAULT NULL,
+                                    rate_id INTEGER DEFAULT NULL);''')
+
+cur.execute("DROP TABLE IF EXISTS tourist_destination;")
+cur.execute('''CREATE TABLE IF NOT EXISTS tourist_destination (location_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                    location_name INTEGER DEFAULT NULL,
+                                    location_description varchar(3000) DEFAULT NULL,
+                                    distance INTEGER DEFAULT NULL,
+                                    image_url varchar(3000) DEFAULT NULL);''')
+
+cur.execute("DROP TABLE IF EXISTS star_rating;")
+cur.execute('''CREATE TABLE IF NOT EXISTS star_rating (user_id INTEGER NOT NULL, 
+                                    rate_id INTEGER DEFAULT NULL,
+                                    star_number INTEGER DEFAULT NULL);''')
+
 
 cur.execute('''INSERT INTO category (ID, name) VALUES
 (129, 'Pants');''')
