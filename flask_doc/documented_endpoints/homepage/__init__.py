@@ -5,13 +5,15 @@ import sqlite3
 
 namespace = Namespace('homepage', 'HomePage Information')
 
-def responses(fetchdata):
+def responses(fetchdata, type):
     results = []
-    keys = ['restaurant_id', 'restaurant_name', 'restaurant_location_id', 'restaurant_image_url', 'restaurant_description',
-            'hotel_id', 'hotel_name', 'hotel_location_id', 'hotel_image_url', 'hotel_description']
-    for j in fetchdata:
+    if type == 'restaurants':
+        keys = ['restaurant_id', 'restaurant_name', 'location_id', 'image_url', 'restaurant_description']
+    else:
+        keys = ['hotel_id', 'hotel_name', 'location_id', 'image_url', 'hotel_description']
+    for record in fetchdata:
         result = {}
-        for x, i in enumerate(j):
+        for x, i in enumerate(record):
             result[keys[x]] = i
         results.append(result)
     return results
@@ -24,10 +26,19 @@ class ShowHomePage(Resource):
     def get(self):
         con = sqlite3.connect('database.db')
         cur = con.cursor()
-        cur.execute("SELECT * FROM restaurants, hotels;")
-        fetchdata = cur.fetchall()
-        cur.close()
-        if(len(fetchdata) == 0):
+        restaurants_query = cur.execute("SELECT * FROM restaurants;").fetchall()
+        hotels_query =  cur.execute("SELECT * FROM hotels;").fetchall()
+
+        if(len(restaurants_query) == 0 and len(hotels_query) != 0):
+            return responses(hotels_query, 'hotels')
+        if(len(restaurants_query) != 0 and len(hotels_query) == 0):
+            return responses(restaurants_query, 'restaurants')
+        if(len(restaurants_query) == 0 and len(hotels_query) == 0):
             return namespace.abort(404, 'Not Found')
-        print(fetchdata)
-        return responses(fetchdata)
+        else:
+            hotels = responses(hotels_query, 'hotels')
+            restaurants = responses(restaurants_query, 'restaurants')
+
+        cur.close()
+        
+        return {'hotels':hotels, 'restaurants':restaurants}
