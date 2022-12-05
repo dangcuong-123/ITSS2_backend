@@ -5,6 +5,7 @@ import sqlite3
 
 namespace = Namespace('homepage', 'HomePage Information')
 
+
 def responses(fetchdata):
     results = []
     keys = ['restaurant_id', 'restaurant_name', 'restaurant_location_id', 'restaurant_image_url', 'restaurant_description',
@@ -15,6 +16,7 @@ def responses(fetchdata):
             result[keys[x]] = i
         results.append(result)
     return results
+
 
 @namespace.route('/show')
 class ShowHomePage(Resource):
