@@ -3,7 +3,7 @@ from flask import request, json
 from flask_restx import Namespace, Resource, fields, reqparse
 import sqlite3
 
-namespace = Namespace('homepage', 'HomePage Information')
+namespace = Namespace('Homepage', 'HomePage Information')
 
 
 def responses(fetchdata, type):
