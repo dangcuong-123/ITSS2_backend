@@ -2,7 +2,7 @@ from flask import request
 from flask_restx import Namespace, Resource, reqparse
 import sqlite3
 
-namespace = Namespace('Homepage', 'HomePage Information')
+namespace = Namespace('homepage', 'HomePage Information')
 
 
 def responses(fetchdata, type):
