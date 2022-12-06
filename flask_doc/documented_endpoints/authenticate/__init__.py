@@ -51,16 +51,15 @@ parser_add = reqparse.RequestParser()
 parser_add.add_argument('name', type=str, help='User\'s name (eg: vai)', location='json')
 parser_add.add_argument('email', type=str, help='User\'s email', location='json')
 parser_add.add_argument('password', type=str, help='User\'s password (eg: password)', location='json')
-parser_add.add_argument('image_url', type=str, help='User\'s image url (eg: sfdfsdf)', location='json')
 @namespace.route('/signup', methods=['POST'])
 class SignUp(Resource):
     @namespace.expect(parser_add, validate=True)
     def post(self):
         con = sqlite3.connect('database.db')
-        name = request.form.get('name', default="NULL")
-        email = request.form.get('email', default="NULL")
-        password = request.form.get('password', default="NULL")
-        image_url = request.form.get('image_url', default="NULL")
+        content = json.loads(request.data)
+        name = content.get('name', "NULL")
+        email = content.get('email', "NULL")
+        password = content.get('password', "NULL")
 
         if not check(email):
             return namespace.abort(400, 'Invalid Email')
@@ -74,8 +73,8 @@ class SignUp(Resource):
             cur.close()
             return namespace.abort(400, 'User exist')
         else:
-            cur.execute("INSERT INTO users (name, email, password, image_url) VALUES (\"{}\", \"{}\", \"{}\", \"{}\");".format
-                        (name, email, password, image_url))
+            cur.execute("INSERT INTO users (name, email, password) VALUES (\"{}\", \"{}\", \"{}\");".format
+                        (name, email, password))
         con.commit()
         cur.close()
         return 'Successfully Added User'
