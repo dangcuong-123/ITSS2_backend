@@ -2,20 +2,24 @@ from flask import request
 from flask_restx import Namespace, Resource, reqparse
 import sqlite3
 
-namespace = Namespace('homepage', 'HomePage Information')
+namespace = Namespace('Homepage', 'HomePage Information')
+
 
 def responses(fetchdata, type):
     results = []
     if type == 'restaurants':
-        keys = ['restaurant_id', 'restaurant_name', 'location_id', 'image_url', 'restaurant_description']
+        keys = ['restaurant_id', 'restaurant_name',
+                'location_id', 'image_url', 'restaurant_description']
     else:
-        keys = ['hotel_id', 'hotel_name', 'location_id', 'image_url', 'hotel_description']
+        keys = ['hotel_id', 'hotel_name', 'location_id',
+                'image_url', 'hotel_description']
     for record in fetchdata:
         result = {}
         for x, i in enumerate(record):
             result[keys[x]] = i
         results.append(result)
     return results
+
 
 @namespace.route('/show')
 class ShowHomePage(Resource):
@@ -25,8 +29,9 @@ class ShowHomePage(Resource):
     def get(self):
         con = sqlite3.connect('database.db')
         cur = con.cursor()
-        restaurants_query = cur.execute("SELECT * FROM restaurants;").fetchall()
-        hotels_query =  cur.execute("SELECT * FROM hotels;").fetchall()
+        restaurants_query = cur.execute(
+            "SELECT * FROM restaurants;").fetchall()
+        hotels_query = cur.execute("SELECT * FROM hotels;").fetchall()
 
         if(len(restaurants_query) == 0 and len(hotels_query) != 0):
             return responses(hotels_query, 'hotels')

@@ -6,12 +6,14 @@ import re
 namespace = Namespace('authenticate', 'Login and Signup')
 
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
- 
+
+
 def check(email):
     if(re.fullmatch(regex, email)):
         return True
     else:
         return False
+
 
 parser_login = reqparse.RequestParser()
 parser_login.add_argument('email', type=str, help='User\'s email (eg: hieu@gmail.com)', location='json')
@@ -24,24 +26,26 @@ class Login(Resource):
         con = sqlite3.connect('database.db')
         content = json.loads(request.data)
 
-        email = content.get("email","NULL")
-        password = content.get("password","NULL")
+        email = content.get("email", "NULL")
+        password = content.get("password", "NULL")
         if(email == "NULL" or password == "NULL"):
             return namespace.abort(400, 'Email Or Password Not Null')
         if not check(email):
             return namespace.abort(400, 'Invalid Email')
         cur = con.cursor()
-        cur.execute('''select email, password from users where email = '{}' and password = {};'''.format(email, '''\'''' + password + '''\''''))
+        cur.execute('''select email, password from users where email = '{}' and password = {};'''.format(
+            email, '''\'''' + password + '''\''''))
         # cur.execute(f'''select email, password from users where email='hieu@gmail.com' and password='hieuhieu';''')
         fetchdata = cur.fetchall()
         if(len(fetchdata) == 0):
             cur.close()
             return namespace.abort(400, 'Email Or Password Not Found')
-        
+
         con.commit()
         cur.close()
 
         return 'Successfully Login'
+
 
 parser_add = reqparse.RequestParser()
 parser_add.add_argument('name', type=str, help='User\'s name (eg: vai)', location='json')
@@ -57,14 +61,15 @@ class SignUp(Resource):
         email = request.form.get('email', default="NULL")
         password = request.form.get('password', default="NULL")
         image_url = request.form.get('image_url', default="NULL")
-        
+
         if not check(email):
             return namespace.abort(400, 'Invalid Email')
-            
+
         cur = con.cursor()
-        cur.execute('''select email, password from users where email = '{}';'''.format(email))
+        cur.execute(
+            '''select email, password from users where email = '{}';'''.format(email))
         fetchdata = cur.fetchall()
-        
+
         if(len(fetchdata) != 0):
             cur.close()
             return namespace.abort(400, 'User exist')
@@ -74,4 +79,3 @@ class SignUp(Resource):
         con.commit()
         cur.close()
         return 'Successfully Added User'
-
