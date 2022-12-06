@@ -24,7 +24,7 @@ parser_edit.add_argument('restaurant_name', type=str, help='Restaurant\'s name (
 parser_edit.add_argument('restaurant_description', type=str, help='Restaurant\'s detail (eg: rat la dep)', location='json')
 parser_edit.add_argument('image_url', type=str, help='Restaurant\'s image', location='json')
 parser_edit.add_argument('location_id', type=int, help='Restaurant\'s location id', location='json')
-@namespace.route('/edit_restaurant', methods=['POST'])
+@namespace.route('/edit_restaurant', methods=['PUT'])
 class EditRestaurant(Resource):
 
     @namespace.response(500, 'Internal Server error')
@@ -32,7 +32,7 @@ class EditRestaurant(Resource):
     @namespace.response(200, 'Successfully edit')
     @namespace.expect(parser_edit, validate=True)
 
-    def post(self):
+    def put(self):
         con = sqlite3.connect('database.db')
         print(request.data)
         content = json.loads(request.data)
