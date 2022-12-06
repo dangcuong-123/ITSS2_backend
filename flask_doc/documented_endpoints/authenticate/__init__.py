@@ -1,10 +1,9 @@
-from os import name
 from flask import request, json
 from flask_restx import Namespace, Resource, reqparse
 import sqlite3
 import re
 
-namespace = Namespace('authen', 'Login and Signup')
+namespace = Namespace('authenticate', 'Login and Signup')
 
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
  
@@ -15,8 +14,8 @@ def check(email):
         return False
 
 parser_login = reqparse.RequestParser()
-parser_login.add_argument('email', type=str, help='user\'s email (eg: hieu@gmail.com)', location='json')
-parser_login.add_argument('password', type=str, help='Product\'s name (eg: quan dai)', location='json')
+parser_login.add_argument('email', type=str, help='User\'s email (eg: hieu@gmail.com)', location='json')
+parser_login.add_argument('password', type=str, help='User\'s name (eg: hieuhieu)', location='json')
 @namespace.route('/login', methods=['POST'])
 class Login(Resource):
     @namespace.response(500, 'Internal Server error')
@@ -45,15 +44,14 @@ class Login(Resource):
         return 'Successfully Login'
 
 parser_add = reqparse.RequestParser()
-parser_add.add_argument('name', type=str, help='User\'s name (eg: vai)', location='form')
-parser_add.add_argument('email', type=str, help='User\'s email', location='form')
-parser_add.add_argument('password', type=str, help='User\'s password (eg: password)', location='form')
-parser_add.add_argument('image_url', type=str, help='User\'s image url (eg: sfdfsdf)', location='form')
-@namespace.route('/signup', methods=['PUT'])
+parser_add.add_argument('name', type=str, help='User\'s name (eg: vai)', location='json')
+parser_add.add_argument('email', type=str, help='User\'s email', location='json')
+parser_add.add_argument('password', type=str, help='User\'s password (eg: password)', location='json')
+parser_add.add_argument('image_url', type=str, help='User\'s image url (eg: sfdfsdf)', location='json')
+@namespace.route('/signup', methods=['POST'])
 class SignUp(Resource):
-    
     @namespace.expect(parser_add, validate=True)
-    def put(self):
+    def post(self):
         con = sqlite3.connect('database.db')
         name = request.form.get('name', default="NULL")
         email = request.form.get('email', default="NULL")
