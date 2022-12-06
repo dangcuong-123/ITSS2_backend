@@ -160,5 +160,4 @@ cython_debug/
 #.idea/
 database.db
 .vscode/
-
  */__pycache__/*
