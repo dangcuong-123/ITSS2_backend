@@ -34,7 +34,6 @@ parser_edit.add_argument('image_url', type=str,
 parser_edit.add_argument('location_id', type=int,
                          help='Restaurant\'s location id', location='json')
 
-
 @namespace.route('/edit_restaurant', methods=['PUT'])
 class EditRestaurant(Resource):
 
@@ -87,8 +86,6 @@ class EditRestaurant(Resource):
 
 parser_delete = reqparse.RequestParser()
 parser_delete.add_argument('id', type=int, help='Restaurant\'s id (eg: 123)')
-
-
 @namespace.route('/delete_restaurant', methods=['DELETE'])
 class DeleteRestaurant(Resource):
     # @namespace.marshal_list_with(Restaurant_model)
@@ -144,9 +141,9 @@ parser_restaurants.add_argument(
 parser_restaurants.add_argument(
     'image_url', type=str, help='image restaurants', location='json')
 parser_restaurants.add_argument(
+    'menu_list', type=json, help='Menu list', location='json')
+parser_restaurants.add_argument(
     'restaurant_description', type=str, help='restaurant description', location='json')
-
-
 @namespace.route('/create', methods=['POST'])
 class CreateRestaurants(Resource):
     @namespace.response(500, 'Internal Server error')
@@ -160,6 +157,7 @@ class CreateRestaurants(Resource):
         restaurant_name = content.get("restaurant_name", "NULL")
         location_id = content.get("location_id", "NULL")
         image_url = content.get("image_url")
+        menu_list = content.get("menu_list")
         restaurant_description = content.get("restaurant_description")
 
         if(location_id != 'NULL'):
