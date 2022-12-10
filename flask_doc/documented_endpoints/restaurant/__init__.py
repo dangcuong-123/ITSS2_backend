@@ -140,8 +140,8 @@ parser_restaurants.add_argument(
     'location_id', type=str, help='location id', location='json')
 parser_restaurants.add_argument(
     'image_url', type=str, help='image restaurants', location='json')
-parser_restaurants.add_argument(
-    'menu_list', type=json, help='Menu list', location='json')
+# parser_restaurants.add_argument(
+#     'menu_list', type=json, help='Menu list', location='json')
 parser_restaurants.add_argument(
     'restaurant_description', type=str, help='restaurant description', location='json')
 @namespace.route('/create', methods=['POST'])
@@ -157,7 +157,7 @@ class CreateRestaurants(Resource):
         restaurant_name = content.get("restaurant_name", "NULL")
         location_id = content.get("location_id", "NULL")
         image_url = content.get("image_url")
-        menu_list = content.get("menu_list")
+        # menu_list = content.get("menu_list")
         restaurant_description = content.get("restaurant_description")
 
         if(location_id != 'NULL'):
