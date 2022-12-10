@@ -33,7 +33,7 @@ class Login(Resource):
         if not check(email):
             return namespace.abort(400, 'Invalid Email')
         cur = con.cursor()
-        cur.execute('''select email, password from users where email = '{}' and password = {};'''.format(
+        cur.execute('''select name, email, password, image_url from users where email = '{}' and password = {};'''.format(
             email, '''\'''' + password + '''\''''))
         # cur.execute(f'''select email, password from users where email='hieu@gmail.com' and password='hieuhieu';''')
         fetchdata = cur.fetchall()
@@ -44,7 +44,7 @@ class Login(Resource):
         con.commit()
         cur.close()
 
-        return 'Successfully Login'
+        return fetchdata
 
 
 parser_add = reqparse.RequestParser()
