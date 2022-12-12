@@ -10,10 +10,10 @@ def responses(fetchdata, type):
     results = []
     if type == 'restaurants':
         keys = ['restaurant_id', 'restaurant_name',
-                'location_id', 'image_url', 'restaurant_description']
+                'hotel_id', 'image_url', 'restaurant_fee', 'restaurant_description']
     else:
         keys = ['hotel_id', 'hotel_name', 'location_id',
-                'image_url', 'hotel_description']
+                'image_url', 'hotel_fee', 'hotel_description']
     for record in fetchdata:
         result = {}
         for x, i in enumerate(record):

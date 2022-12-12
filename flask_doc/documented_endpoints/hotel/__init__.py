@@ -8,19 +8,18 @@ namespace = Namespace('hotel', 'Hotels Information')
 
 def responses(fetchdata, type):
     results = []
-    if type == 'hotels':
-        keys = ['hotel_id', 'hotel_name',
-                'location_id', 'image_url', 'hotel_description']
+    if type == 'restaurants':
+        keys = ['restaurant_id', 'restaurant_name',
+                'hotel_id', 'image_url', 'restaurant_fee', 'restaurant_description']
     else:
         keys = ['hotel_id', 'hotel_name', 'location_id',
-                'image_url', 'hotel_description']
+                'image_url', 'hotel_fee', 'hotel_description']
     for record in fetchdata:
         result = {}
         for x, i in enumerate(record):
             result[keys[x]] = i
         results.append(result)
     return results
-
 
 parser_edit = reqparse.RequestParser()
 parser_edit.add_argument('hotel_id', type=int,
