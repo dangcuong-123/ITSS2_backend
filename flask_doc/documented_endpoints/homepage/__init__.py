@@ -116,10 +116,10 @@ class SearchByName(Resource):
         restaurants_query = cur.execute(f'''select * from restaurants as r
                         where r.hotel_id in (select h.hotel_id from hotels as h
                                                     where h.location_id = (select location_id from tourist_destination
-                                                    where location_name='{loc_name}' COLLATE NOCASE));''').fetchall()
+                                                    where location_name like '%{loc_name}%' COLLATE NOCASE));''').fetchall()
         hotels_query = cur.execute(f'''select * from hotels as h
                         where h.location_id = (select location_id from tourist_destination
-                                                    where location_name='{loc_name}' COLLATE NOCASE);''').fetchall()
+                                                    where location_name like '%{loc_name}%' COLLATE NOCASE);''').fetchall()
         if(len(restaurants_query) == 0 and len(hotels_query) != 0):
             return responses(hotels_query, 'hotels')
         if(len(restaurants_query) != 0 and len(hotels_query) == 0):
