@@ -33,7 +33,6 @@ parser_edit.add_argument('image_url', type=str,
 parser_edit.add_argument('location_id', type=int,
                          help='Hotel\'s location id', location='json')
 
-
 @namespace.route('/edit_hotel', methods=['PUT'])
 class EditHotel(Resource):
 
@@ -116,7 +115,6 @@ class DeleteHotel(Resource):
         cur.close()
         return 'Successfully Delete hotel'
 
-
 @namespace.route('/show')
 class ShowHotels(Resource):
     @namespace.response(500, 'Internal Server error')
@@ -143,8 +141,6 @@ parser_hotels.add_argument(
     'image_url', type=str, help='image hotels', location='json')
 parser_hotels.add_argument(
     'hotel_description', type=str, help='hotel description', location='json')
-
-
 @namespace.route('/create', methods=['POST'])
 class CreateHotels(Resource):
     @namespace.response(500, 'Internal Server error')
@@ -179,3 +175,29 @@ class CreateHotels(Resource):
         cur.close()
 
         return "create hotel successfully"
+
+parser_name = reqparse.RequestParser()
+parser_name.add_argument('name', type=str, help='Hotel\'s name (eg: ha long)')
+@namespace.route('/search_hotel_name', methods=['GET'])
+class SearchByName(Resource):
+    @namespace.response(500, 'Internal Server error')
+    @namespace.response(400, 'Invalid value - Not Found')
+    @namespace.response(200, 'Success')
+
+    @namespace.expect(parser_name)
+    def get(self):
+        con = sqlite3.connect('database.db')
+        cur = con.cursor()
+        hotel_name = request.args.get('name', default="NULL") #name = ao
+        if(hotel_name == "NULL"):
+            return namespace.abort(400, 'Invalid value')
+        hotel_name = hotel_name.lower()
+        hotels_query = cur.execute(f'''select * from hotels as h
+                        where h.hotel_name like '%{hotel_name}%' COLLATE NOCASE;''').fetchall()
+
+        if len(hotels_query) == 0:
+            return namespace.abort(400, 'Not Found')
+
+        hotels = responses(hotels_query, 'hotels')
+        cur.close()
+        return hotels

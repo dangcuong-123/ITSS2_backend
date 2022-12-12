@@ -38,7 +38,7 @@ class ShowHomePage(Resource):
         if(len(restaurants_query) != 0 and len(hotels_query) == 0):
             return responses(restaurants_query, 'restaurants')
         if(len(restaurants_query) == 0 and len(hotels_query) == 0):
-            return namespace.abort(404, 'Not Found')
+            return namespace.abort(400, 'Not Found')
         else:
             hotels = responses(hotels_query, 'hotels')
             restaurants = responses(restaurants_query, 'restaurants')
@@ -99,7 +99,7 @@ class SearchByLowerPrice(Resource):
 
 parser_name = reqparse.RequestParser()
 parser_name.add_argument('name', type=str, help='Location\'s name (eg: ha long)')
-@namespace.route('/search_name', methods=['GET'])
+@namespace.route('/search_location_name', methods=['GET'])
 class SearchByName(Resource):
     @namespace.response(500, 'Internal Server error')
     @namespace.response(400, 'Invalid value - Not Found')
@@ -116,16 +116,16 @@ class SearchByName(Resource):
         restaurants_query = cur.execute(f'''select * from restaurants as r
                         where r.hotel_id in (select h.hotel_id from hotels as h
                                                     where h.location_id = (select location_id from tourist_destination
-                                                    where location_name='{loc_name}'));''').fetchall()
+                                                    where location_name='{loc_name}' COLLATE NOCASE));''').fetchall()
         hotels_query = cur.execute(f'''select * from hotels as h
                         where h.location_id = (select location_id from tourist_destination
-                                                    where location_name='{loc_name}');''').fetchall()
+                                                    where location_name='{loc_name}' COLLATE NOCASE);''').fetchall()
         if(len(restaurants_query) == 0 and len(hotels_query) != 0):
             return responses(hotels_query, 'hotels')
         if(len(restaurants_query) != 0 and len(hotels_query) == 0):
             return responses(restaurants_query, 'restaurants')
         if(len(restaurants_query) == 0 and len(hotels_query) == 0):
-            return namespace.abort(404, 'Not Found')
+            return namespace.abort(400, 'Not Found')
         else:
             hotels = responses(hotels_query, 'hotels')
             restaurants = responses(restaurants_query, 'restaurants')

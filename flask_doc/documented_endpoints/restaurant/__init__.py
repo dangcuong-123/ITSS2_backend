@@ -179,3 +179,29 @@ class CreateRestaurants(Resource):
         cur.close()
 
         return "create restaurant successfully"
+
+parser_name = reqparse.RequestParser()
+parser_name.add_argument('name', type=str, help='Restaurant\'s name (eg: ha long)')
+@namespace.route('/search_restaurant_name', methods=['GET'])
+class SearchByName(Resource):
+    @namespace.response(500, 'Internal Server error')
+    @namespace.response(400, 'Invalid value - Not Found')
+    @namespace.response(200, 'Success')
+
+    @namespace.expect(parser_name)
+    def get(self):
+        con = sqlite3.connect('database.db')
+        cur = con.cursor()
+        restaurant_name = request.args.get('name', default="NULL") #name = ao
+        if(restaurant_name == "NULL"):
+            return namespace.abort(400, 'Invalid value')
+        restaurant_name = restaurant_name.lower()
+        restaurants_query = cur.execute(f'''select * from restaurants as h
+                        where h.restaurant_name like '%{restaurant_name}%' COLLATE NOCASE;''').fetchall()
+
+        if len(restaurants_query) == 0:
+            return namespace.abort(400, 'Not Found')
+
+        hotels = responses(restaurants_query, 'restaurants')
+        cur.close()
+        return hotels
