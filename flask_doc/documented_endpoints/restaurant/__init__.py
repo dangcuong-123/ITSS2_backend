@@ -5,14 +5,13 @@ import sqlite3
 
 namespace = Namespace('restaurant', 'Restaurants Information')
 
-
 def responses(fetchdata, type):
     results = []
     if type == 'restaurants':
-        keys = ['restaurant_id', 'restaurant_name',
-                'hotel_id', 'image_url', 'restaurant_fee', 'restaurant_description']
+        keys = ['restaurant_id', 'restaurant_name', 'restaurant_address', 
+                'hotel_id', 'image_url', 'restaurant_fee', 'restaurant_open_time', 'restaurant_description']
     else:
-        keys = ['hotel_id', 'hotel_name', 'location_id',
+        keys = ['hotel_id', 'hotel_name', 'hotel_address', 'location_id',
                 'image_url', 'hotel_fee', 'hotel_description']
     for record in fetchdata:
         result = {}
@@ -20,7 +19,6 @@ def responses(fetchdata, type):
             result[keys[x]] = i
         results.append(result)
     return results
-
 
 parser_edit = reqparse.RequestParser()
 parser_edit.add_argument('restaurant_id', type=int,
@@ -205,3 +203,28 @@ class SearchByName(Resource):
         hotels = responses(restaurants_query, 'restaurants')
         cur.close()
         return hotels
+
+parser_id = reqparse.RequestParser()
+parser_id.add_argument('price', type=int, help='Restaurant\'s price')
+@namespace.route('/search_restaurant_lower_equal_price', methods=['GET'])
+class SearchByLowerPrice(Resource):
+    @namespace.response(500, 'Internal Server error')
+    @namespace.response(400, 'Invalid value - Not Found')
+    @namespace.response(200, 'Success')
+
+    @namespace.expect(parser_id)
+    def get(self):
+        con = sqlite3.connect('database.db')
+        cur = con.cursor()
+        price = request.args.get('price', default="NULL")
+        if(price == "NULL"):
+            return namespace.abort(400, 'Invalid value')
+      
+        restaurants_query = cur.execute(f'''select * from restaurants as r
+                        where r.restaurant_fee <= {price};''').fetchall()
+        if len(restaurants_query) == 0:
+            return namespace.abort(400, 'Not Found')
+
+        restaurants = responses(restaurants_query, 'restaurants')
+        cur.close()
+        return restaurants
