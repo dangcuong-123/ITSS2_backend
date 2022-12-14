@@ -44,15 +44,17 @@ class EditHotel(Resource):
     def put(self):
         con = sqlite3.connect('database.db')
         content = json.loads(request.data)
+        print(content)
         hotel_id = content.get("hotel_id", "NULL")
         if(hotel_id == "NULL"):
             return namespace.abort(400, 'ID hotel Not Null')
         hotel_name = content.get("hotel_name", "NULL")
         hotel_address_input = content.get("hotel_address_input", "NULL")
         hotel_address_select = content.get("hotel_address_select", "NULL")
-        image_url = content.get("image_url")
-        hotel_description = content.get("hotel_description")
-        hotel_fee = content.get("hotel_fee")
+        image_url = content.get("image_url", "NULL")
+        print(image_url)
+        hotel_description = content.get("hotel_description", "NULL")
+        hotel_fee = content.get("hotel_fee", "NULL")
 
         cur = con.cursor()
         cur.execute("SELECT hotel_id FROM hotels WHERE hotel_id = {};".format(
@@ -63,7 +65,7 @@ class EditHotel(Resource):
             cur.close()
             return namespace.abort(400, 'ID Hotel Not Found')
 
-        if(hotel_address_select != 'NULL'):
+        if(hotel_address_select != None):
             cur.execute(
                 "SELECT location_id FROM tourist_destination WHERE location_address like '%{}%';".format(hotel_address_select))
             fetchdata = cur.fetchall()
@@ -75,9 +77,9 @@ class EditHotel(Resource):
                 location_id = fetchdata[0][0]
 
         cols = ['hotel_name', 'hotel_address', 'location_id', 'hotel_fee', 'image_url', 'hotel_description']
-        inputs = [hotel_name, hotel_description, image_url]
+        inputs = [hotel_name, hotel_address_input, location_id, hotel_fee, image_url, hotel_description]
         for i, col in enumerate(cols):
-            if(inputs[i] != "NULL"):
+            if(inputs[i] != None):
                 cur.execute("UPDATE hotels SET {} = \"{}\" WHERE hotel_id = {};".format(
                     col, inputs[i], hotel_id))
 
@@ -164,7 +166,7 @@ class CreateHotels(Resource):
         hotel_description = content.get("hotel_description")
         hotel_fee = content.get("hotel_fee")
 
-        if(hotel_address_select != 'NULL'):
+        if(hotel_address_select != None):
             cur.execute(
                 "SELECT location_id FROM tourist_destination WHERE location_address like '%{}%';".format(hotel_address_select))
             fetchdata = cur.fetchall()
@@ -174,8 +176,7 @@ class CreateHotels(Resource):
                 return namespace.abort(400, 'Location Not Found')
             else:
                 location_id = fetchdata[0][0]
-        hotel_address = hotel_address_input + ', ' + hotel_address_select
-        hotel = (hotel_name, hotel_address, location_id, hotel_fee, image_url, hotel_description)
+        hotel = (hotel_name, hotel_address_input, location_id, hotel_fee, image_url, hotel_description)
         sql = '''INSERT INTO hotels (hotel_name, hotel_address, location_id, hotel_fee, image_url, hotel_description) VALUES (?, ?, ?, ?, ?, ?);'''
 
         cur.execute(sql, hotel)
