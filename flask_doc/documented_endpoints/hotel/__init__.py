@@ -8,8 +8,9 @@ namespace = Namespace('hotel', 'Hotels Information')
 def responses(fetchdata, type):
     results = []
     if type == 'restaurants':
-        keys = ['restaurant_id', 'restaurant_name', 'restaurant_address', 
-                'hotel_id', 'image_url', 'restaurant_fee', 'restaurant_open_time', 'restaurant_description']
+        keys = ['restaurant_id', 'restaurant_name', 'restaurant_address', 'hotel_id',
+        'image_url', 'restaurant_fee', 'restaurant_open_time', 'restaurant_description',
+        'menu_description', 'menu_img_url']
     else:
         keys = ['hotel_id', 'hotel_name', 'hotel_address', 'location_id',
                 'image_url', 'hotel_fee', 'hotel_description']
