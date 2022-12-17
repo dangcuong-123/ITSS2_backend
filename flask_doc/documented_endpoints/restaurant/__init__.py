@@ -242,16 +242,35 @@ class SearchByName(Resource):
         cur.close()
         return hotels
 
+@namespace.route('/search_restaurant_id/<int:id>', methods=['GET'])
+class SearchById(Resource):
+    @namespace.response(500, 'Internal Server error')
+    @namespace.response(400, 'Invalid value - Not Found')
+    @namespace.response(200, 'Success')
 
-parser_id = reqparse.RequestParser()
-parser_id.add_argument('price', type=int, help='Restaurant\'s price')
+    def get(self, id):
+        con = sqlite3.connect('database.db')
+        cur = con.cursor()
+        if(id == "NULL"):
+            return namespace.abort(400, 'Invalid value')
+        restaurants_query = cur.execute(f'''select * from restaurants as h
+                        where h.restaurant_id = {id};''').fetchall()
+        if len(restaurants_query) == 0:
+            return namespace.abort(400, 'Not Found')
+
+        restaurants = responses(restaurants_query, 'restaurants')
+        cur.close()
+        return restaurants
+
+parser_price = reqparse.RequestParser()
+parser_price.add_argument('price', type=int, help='Restaurant\'s price')
 @namespace.route('/search_restaurant_lower_equal_price', methods=['GET'])
 class SearchByLowerPrice(Resource):
     @namespace.response(500, 'Internal Server error')
     @namespace.response(400, 'Invalid value - Not Found')
     @namespace.response(200, 'Success')
 
-    @namespace.expect(parser_id)
+    @namespace.expect(parser_price)
     def get(self):
         con = sqlite3.connect('database.db')
         cur = con.cursor()
