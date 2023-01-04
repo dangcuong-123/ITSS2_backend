@@ -5,6 +5,7 @@ from flask_doc.documented_endpoints.authenticate import namespace as authenticat
 from flask_doc.documented_endpoints.homepage import namespace as homepage
 from flask_doc.documented_endpoints.restaurant import namespace as restaurant
 from flask_doc.documented_endpoints.hotel import namespace as hotel
+from flask_doc.documented_endpoints.plan import namespace as plan
 
 blueprint = Blueprint('documented_api', __name__)
 
@@ -19,3 +20,4 @@ api_extension.add_namespace(authenticate)
 api_extension.add_namespace(homepage)
 api_extension.add_namespace(restaurant)
 api_extension.add_namespace(hotel)
+api_extension.add_namespace(plan)
