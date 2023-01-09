@@ -53,7 +53,6 @@ class EditHotel(Resource):
         hotel_address_input = content.get("hotel_address_input", "NULL")
         hotel_address_select = content.get("hotel_address_select", "NULL")
         image_url = content.get("image_url", "NULL")
-        print(image_url)
         hotel_description = content.get("hotel_description", "NULL")
         hotel_fee = content.get("hotel_fee", "NULL")
 

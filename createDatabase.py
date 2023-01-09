@@ -79,7 +79,6 @@ cur.execute('''CREATE TABLE IF NOT EXISTS tags_loc (id INTEGER PRIMARY KEY AUTOI
                                     tag_id INTEGER DEFAULT NULL,
                                     location_id INTEGER DEFAULT NULL);''')
 
-
 cur.execute('''INSERT INTO users (user_id, name, email, password, image_url) VALUES
 (1, 'hieu', 'hieu@gmail.com', 'hieu', 'http://halongcity.gov.vn/ckfinder/userfiles/images/2022/05/Loan/hanh/ltdl%20vinh%20HL.jpg'),
 (2, 'admin', 'admin@gmail.com', 'admin', 'http://halongcity.gov.vn/ckfinder/userfiles/images/2022/05/Loan/hanh/ltdl%20vinh%20HL.jpg');''')
@@ -88,8 +87,8 @@ cur.execute('''INSERT INTO comments (comment_id, user_id, comment_content, comme
 (1, 1, 'ngon', '1985‑09‑25 17:45:30.005', 1);''')
 
 cur.execute('''INSERT INTO tourist_destination (location_id, location_name, location_description, location_address, image_url, rcm_transport_id) VALUES
-(1, 'ha long', 'rat la dep', 'quang ninh', 'http://halongcity.gov.vn/ckfinder/userfiles/images/2022/05/Loan/hanh/ltdl%20vinh%20HL.jpg', 1),
-(2, 'chua mot cot', 'rat dep', 'ha noi', 'https://vietnam.travel/sites/default/files/styles/top_banner/public/2017-06/vietnam-travel-5.jpg?itok=XVnHP3ty', 2);''')
+(1, 'vinh ha long', 'bờ tây vịnh Bắc Bộ tại khu vực biển Đông Bắc Việt Nam', 'quang ninh', 'http://halongcity.gov.vn/ckfinder/userfiles/images/2022/05/Loan/hanh/ltdl%20vinh%20HL.jpg', 1),
+(2, 'chua mot cot', 'Chùa Một Cột, Đội Cấn, Ba Đình, Hà Nội', 'ha noi', 'https://vietnam.travel/sites/default/files/styles/top_banner/public/2017-06/vietnam-travel-5.jpg?itok=XVnHP3ty', 2);''')
 
 cur.execute('''INSERT INTO rcm_transport (rcm_transport_id, location_name, train, car, ship, motorbike) VALUES
 (1, 'ha long', 1, 1, 1, 1),
