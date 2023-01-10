@@ -25,7 +25,8 @@ cur.execute('''CREATE TABLE IF NOT EXISTS tourist_destination (location_id INTEG
                                     location_description varchar(3000) DEFAULT NULL,
                                     location_address varchar(3000) DEFAULT NULL,
                                     image_url varchar(3000) DEFAULT NULL,
-                                    rcm_transport_id INTEGER DEFAULT NULL);''')
+                                    rcm_transport_id INTEGER DEFAULT NULL,
+                                    loc_province varchar(3000) DEFAULT NULL);''')
 
 cur.execute("DROP TABLE IF EXISTS star_rating;")
 cur.execute('''CREATE TABLE IF NOT EXISTS star_rating (comment_id INTEGER NOT NULL, 
@@ -34,7 +35,6 @@ cur.execute('''CREATE TABLE IF NOT EXISTS star_rating (comment_id INTEGER NOT NU
 
 cur.execute("DROP TABLE IF EXISTS rcm_transport;")
 cur.execute('''CREATE TABLE IF NOT EXISTS rcm_transport (rcm_transport_id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                                    location_name varchar(300) DEFAULT NULL,
                                     train INTEGER DEFAULT 0,
                                     car INTEGER DEFAULT 0,
                                     ship INTEGER DEFAULT 0,
@@ -70,13 +70,12 @@ cur.execute('''CREATE TABLE IF NOT EXISTS plans (plan_id INTEGER PRIMARY KEY AUT
                                     user_id INTEGER DEFAULT NULL);''')
 
 cur.execute("DROP TABLE IF EXISTS tags;")
-cur.execute('''CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                                    tag_id INTEGER DEFAULT NULL,
-                                    tag_name varchar(1000) DEFAULT NULL);''')
+cur.execute('''CREATE TABLE IF NOT EXISTS tags (tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                                tag_name varchar(1000) DEFAULT NULL);''')
 
 cur.execute("DROP TABLE IF EXISTS tags_loc;")
 cur.execute('''CREATE TABLE IF NOT EXISTS tags_loc (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                                    tag_id INTEGER DEFAULT NULL,
+                                    tag_name varchar(1000) DEFAULT NULL,
                                     location_id INTEGER DEFAULT NULL);''')
 
 cur.execute('''INSERT INTO users (user_id, name, email, password, image_url) VALUES
@@ -86,13 +85,27 @@ cur.execute('''INSERT INTO users (user_id, name, email, password, image_url) VAL
 cur.execute('''INSERT INTO comments (comment_id, user_id, comment_content, comment_time, rate_id) VALUES
 (1, 1, 'ngon', '1985‑09‑25 17:45:30.005', 1);''')
 
-cur.execute('''INSERT INTO tourist_destination (location_id, location_name, location_description, location_address, image_url, rcm_transport_id) VALUES
-(1, 'vinh ha long', 'bờ tây vịnh Bắc Bộ tại khu vực biển Đông Bắc Việt Nam', 'quang ninh', 'http://halongcity.gov.vn/ckfinder/userfiles/images/2022/05/Loan/hanh/ltdl%20vinh%20HL.jpg', 1),
-(2, 'chua mot cot', 'Chùa Một Cột, Đội Cấn, Ba Đình, Hà Nội', 'ha noi', 'https://vietnam.travel/sites/default/files/styles/top_banner/public/2017-06/vietnam-travel-5.jpg?itok=XVnHP3ty', 2);''')
+cur.execute('''INSERT INTO tourist_destination (location_id, location_name, location_description, location_address, image_url, rcm_transport_id, loc_province) VALUES
+(1, 'vinh ha long', 'bờ tây vịnh Bắc Bộ tại khu vực biển Đông Bắc Việt Nam', 'bờ tây vịnh Bắc Bộ tại khu vực biển Đông Bắc Việt Nam', 'http://halongcity.gov.vn/ckfinder/userfiles/images/2022/05/Loan/hanh/ltdl%20vinh%20HL.jpg', 1, 'quang ninh'),
+(2, 'chua mot cot', 'Chùa Một Cột, Đội Cấn, Ba Đình, Hà Nội', 'Chùa Một Cột, Đội Cấn, Ba Đình, Hà Nội', 'https://vietnam.travel/sites/default/files/styles/top_banner/public/2017-06/vietnam-travel-5.jpg?itok=XVnHP3ty', 2, 'ha noi');''')
 
-cur.execute('''INSERT INTO rcm_transport (rcm_transport_id, location_name, train, car, ship, motorbike) VALUES
-(1, 'ha long', 1, 1, 1, 1),
-(2, 'chua mot cot', 0, 1, 0, 1);''')
+cur.execute('''INSERT INTO rcm_transport (train, car, ship, motorbike) VALUES
+(1, 1, 1, 1),
+(1, 1, 1, 0),
+(1, 1, 0, 1),
+(1, 1, 0, 0),
+(1, 0, 1, 1),
+(1, 0, 1, 0),
+(1, 0, 0, 1),
+(1, 0, 0, 0),
+(0, 1, 1, 1),
+(0, 1, 1, 0),
+(0, 1, 0, 1),
+(0, 1, 0, 0),
+(0, 0, 1, 1),
+(0, 0, 1, 0),
+(0, 0, 0, 1),
+(0, 0, 0, 0);''')
 
 cur.execute('''INSERT INTO star_rating (comment_id, rate_id, star_number) VALUES
 (1, 1, 5);''')
@@ -109,6 +122,20 @@ cur.execute('''INSERT INTO hotels (hotel_id, hotel_name, hotel_address, location
 cur.execute('''INSERT INTO plans (plan_id, location_id, hotel_id, restaurant_id, user_id) VALUES
 (1, 1, 1, 1, 1),
 (2, 2, 2, 2, 1);''')
+
+cur.execute('''INSERT INTO tags (tag_id, tag_name) VALUES
+(1, 'bien'),
+(2, 'nui'),
+(3, 'hang dong'),
+(4, 'chua'),
+(5, 'danh lam thang canh');''')
+
+cur.execute('''INSERT INTO tags_loc (id, tag_name, location_id) VALUES
+(1, 'bien', 1),
+(2, 'danh lam thang canh', 1),
+(3, 'chua', 2),
+(4, 'danh lam thang canh', 2),
+(5, 'nui', 2);''')
 
 con.commit()
 con.close()
