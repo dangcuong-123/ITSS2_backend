@@ -27,6 +27,7 @@ def responses(fetchdata, cur):
         results.append(result)
     return results
 
+
 @namespace.route('/show', methods=['GET'])
 class ShowLocation(Resource):
     @namespace.response(500, 'Internal Server error')
@@ -64,7 +65,9 @@ parser_create.add_argument(
 parser_create.add_argument(
     'motorbike', type=int, help='motorbike (eg: 0 or 1)', location='json')
 parser_create.add_argument(
-    'tags', type=str, help='"{ \"tags\": [\"Reading\",\"Sketching\", \"Horse Riding\"]}"', location='json')
+    'tags', type=str, help='''"[\"Reading\",\"Sketching\", \"Horse Riding\"]"''', location='json')
+
+
 @namespace.route('/create', methods=['POST'])
 class CreateLocation(Resource):
     @namespace.response(500, 'Internal Server error')
@@ -94,10 +97,10 @@ class CreateLocation(Resource):
         sql = '''INSERT INTO tourist_destination (location_name, location_description,
                     location_address, image_url, rcm_transport_id, loc_province) VALUES (?, ?, ?, ?, ?, ?);'''
         cur.execute(sql, location)
-        
+
         location_id = cur.execute(
             '''SELECT location_id FROM tourist_destination ORDER BY location_id DESC LIMIT 1''').fetchall()[0][0]
-        tags = json.loads(tags_str)['tags']
+        tags = json.loads(tags_str)
         for tag in tags:
             tag_loc = (tag, location_id)
             sql = '''INSERT INTO tags_loc (tag_name, location_id) VALUES (?, ?);'''
@@ -130,7 +133,9 @@ parser_edit.add_argument(
 parser_edit.add_argument(
     'motorbike', type=int, help='motorbike (eg: 0 or 1)', location='json')
 parser_edit.add_argument(
-    'tags', type=str, help='''"{ \"tags\": [\"Reading\",\"Sketching\", \"Horse Riding\"]}"''', location='json')
+    'tags', type=str, help='''"[\"Reading\",\"Sketching\", \"Horse Riding\"]"''', location='json')
+
+
 @namespace.route('/edit', methods=['PUT'])
 class EditLocation(Resource):
     @namespace.response(500, 'Internal Server error')
@@ -154,12 +159,12 @@ class EditLocation(Resource):
         tags_str = content.get("tags", 'NULL')
         rcm_transport_id = cur.execute(
             f'''SELECT rcm_transport_id FROM rcm_transport WHERE train={train} and car={car} and ship={ship} and motorbike={motorbike}''').fetchall()[0][0]
-        
+
         cur.execute(f'''UPDATE tourist_destination SET location_name="{location_name}", location_description='{location_description}',
                     location_address='{location_address}', image_url='{image_url}', rcm_transport_id={rcm_transport_id}, loc_province='{loc_province}'
                     WHERE location_id={location_id};''')
         cur.execute(f"DELETE FROM tags_loc WHERE location_id={location_id};")
-        tags = json.loads(tags_str)['tags']
+        tags = json.loads(tags_str)
         for tag in tags:
             tag_loc = (tag, location_id)
             sql = '''INSERT INTO tags_loc (tag_name, location_id) VALUES (?, ?);'''
@@ -173,6 +178,8 @@ class EditLocation(Resource):
 
 parser_delete = reqparse.RequestParser()
 parser_delete.add_argument('id', type=int, help='location\'s id (eg: 123)')
+
+
 @namespace.route('/delete', methods=['DELETE'])
 class DeleteLocation(Resource):
     @namespace.response(500, 'Internal Server error')
@@ -209,7 +216,6 @@ class GetTagsName(Resource):
     @namespace.response(500, 'Internal Server error')
     @namespace.response(400, 'Invalid value - Not Found')
     @namespace.response(200, 'Success')
-
     @namespace.expect()
     def get(self):
         con = sqlite3.connect('database.db')
