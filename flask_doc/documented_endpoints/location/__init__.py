@@ -181,8 +181,6 @@ class EditLocation(Resource):
 
 parser_delete = reqparse.RequestParser()
 parser_delete.add_argument('id', type=int, help='location\'s id (eg: 123)')
-
-
 @namespace.route('/delete', methods=['DELETE'])
 class DeleteLocation(Resource):
     @namespace.response(500, 'Internal Server error')
@@ -224,3 +222,22 @@ class GetTagsName(Resource):
 
         cur.close()
         return [tag[1] for tag in tags_query]
+
+parser_name = reqparse.RequestParser()
+parser_name.add_argument('name', type=str, help='location\'s name or province (eg: ha noi)')
+@namespace.route('/search_location_by_name_and_province', methods=['GET'])
+class SearchByNameProvince(Resource):
+    @namespace.response(500, 'Internal Server error')
+    @namespace.response(400, 'Invalid value - Not Found')
+    @namespace.response(200, 'Success')
+    @namespace.expect(parser_name, validate=True)
+    def get(self):
+        con = sqlite3.connect('database.db')
+        cur = con.cursor()
+        name = request.args.get('name', default="NULL")
+        locs_query = cur.execute(f'''select * from tourist_destination where location_name like "%{name}%" or loc_province like "%{name}%";''').fetchall()
+        if(len(locs_query) == 0):
+            return namespace.abort(400, 'Not Found')
+        respon = responses(locs_query, cur)
+        cur.close()
+        return respon
