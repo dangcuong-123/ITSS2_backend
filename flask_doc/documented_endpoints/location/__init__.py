@@ -17,7 +17,10 @@ def responses(fetchdata, cur):
             result[keys[x]] = i
         tags_query = cur.execute(
             "SELECT * FROM tags_loc WHERE tags_loc.location_id={};".format(record[0])).fetchall()
-        result['tags'] = [tag[1] for tag in tags_query]
+        if(len(tags_query) != 0):
+            result['tags'] = [tag[1] for tag in tags_query]
+        else:
+            result['tags'] = []
         transport_query = cur.execute(
             "SELECT * FROM rcm_transport WHERE rcm_transport_id={};".format(record[5])).fetchall()
         result['train'] = transport_query[0][1]
@@ -199,9 +202,6 @@ class DeleteLocation(Resource):
         if(len(fetchdata) == 0):
             cur.close()
             return namespace.abort(400, 'ID location not found')
-        rcm_transport_id = fetchdata[0][1]
-        cur.execute(
-            "DELETE FROM rcm_transport WHERE rcm_transport_id={};".format(rcm_transport_id))
 
         cur.execute(
             "DELETE FROM tourist_destination WHERE location_id={};".format(id))
