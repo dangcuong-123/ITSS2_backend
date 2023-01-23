@@ -69,8 +69,6 @@ parser_create.add_argument(
     'motorbike', type=int, help='motorbike (eg: 0 or 1)', location='json')
 parser_create.add_argument(
     'tags', type=str, help='''"[\"Reading\",\"Sketching\", \"Horse Riding\"]"''', location='json')
-
-
 @namespace.route('/create', methods=['POST'])
 class CreateLocation(Resource):
     @namespace.response(500, 'Internal Server error')
@@ -137,8 +135,6 @@ parser_edit.add_argument(
     'motorbike', type=int, help='motorbike (eg: 0 or 1)', location='json')
 parser_edit.add_argument(
     'tags', type=str, help='''"[\"Reading\",\"Sketching\", \"Horse Riding\"]"''', location='json')
-
-
 @namespace.route('/edit', methods=['PUT'])
 class EditLocation(Resource):
     @namespace.response(500, 'Internal Server error')
