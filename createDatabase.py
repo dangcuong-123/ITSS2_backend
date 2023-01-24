@@ -17,7 +17,8 @@ cur.execute('''CREATE TABLE IF NOT EXISTS comments (comment_id INTEGER PRIMARY K
                                     user_id INTEGER DEFAULT NULL,
                                     comment_content varchar(3000) DEFAULT NULL,
                                     comment_time timestamp DEFAULT NULL,
-                                    plan_id INTEGER DEFAULT NULL,
+                                    restaurant_id INTEGER DEFAULT NULL,
+                                    hotel_id INTEGER DEFAULT NULL,
                                     star_number INTEGER DEFAULT NULL);''')
 
 cur.execute("DROP TABLE IF EXISTS tourist_destination;")
@@ -82,10 +83,13 @@ cur.execute('''INSERT INTO users (user_id, name, email, password, image_url) VAL
 (1, 'hieu', 'hieu@gmail.com', 'hieu', 'http://halongcity.gov.vn/ckfinder/userfiles/images/2022/05/Loan/hanh/ltdl%20vinh%20HL.jpg'),
 (2, 'admin', 'admin@gmail.com', 'admin', 'http://halongcity.gov.vn/ckfinder/userfiles/images/2022/05/Loan/hanh/ltdl%20vinh%20HL.jpg');''')
 
-cur.execute('''INSERT INTO comments (comment_id, user_id, comment_content, comment_time, plan_id, star_number) VALUES
-(1, 1, 'ngon', '2023‑09‑25 17:48:30.005', 1, 5),
-(2, 2, 'tuyet voi', '1985‑09‑25 17:45:30.005', 1, 4),
-(3, 1, 'Rat dang trai nghiem', '1985‑09‑25 17:45:30.005', 2, 3);''')
+cur.execute('''INSERT INTO comments (comment_id, user_id, comment_content, comment_time, restaurant_id, hotel_id, star_number) VALUES
+(1, 1, 'ngon', '2023‑09‑25 17:48:30.005', 1,null, 5),
+(2, 2, 'tuyet voi', '1986‑09‑25 17:45:30.005', 1,null, 4),
+(3, 2, 'tuyet voi', '1985‑09‑25 17:45:30.005', 2,null, 4),
+(4, 1, 'Rat dang trai nghiem', '2023‑09‑25 8:45:30.005',null, 2, 3),
+(5, 1, 'Rat dang trai nghiem', '1995‑09‑25 1:45:30.005',null, 1, 5),
+(6, 1, 'Rat dang trai nghiem', '1985‑09‑25 17:45:30.005',null, 1, 3);''')
 
 cur.execute('''INSERT INTO tourist_destination (location_id, location_name, location_description, location_address, image_url, rcm_transport_id, loc_province) VALUES
 (1, 'vinh ha long', 'bờ tây vịnh Bắc Bộ tại khu vực biển Đông Bắc Việt Nam', 'bờ tây vịnh Bắc Bộ tại khu vực biển Đông Bắc Việt Nam', 'http://halongcity.gov.vn/ckfinder/userfiles/images/2022/05/Loan/hanh/ltdl%20vinh%20HL.jpg', 1, 'quang ninh'),
