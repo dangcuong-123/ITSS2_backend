@@ -16,9 +16,10 @@ parser_plan.add_argument(
 parser_plan.add_argument(
     'comment_content', type=str, help='comment content (eg: dep qua)', location='json')
 parser_plan.add_argument(
-    'user_id', type=int, help='user id (eg: 1)', location='json')
+    'username', type=str, help='username (eg: admin)', location='json')
 parser_plan.add_argument(
     'star_number', type=int, help='star number (eg: 1)', location='json')
+
 
 @namespace.route('/create', methods=['POST'])
 class CreateComments(Resource):
@@ -26,18 +27,20 @@ class CreateComments(Resource):
     @namespace.response(404, 'Not Found')
     @namespace.response(200, 'Success')
     @namespace.expect(parser_plan, validate=True)
-
     def post(self):
         con = sqlite3.connect('database.db')
         cur = con.cursor()
         content = json.loads(request.data)
-        user_id = content.get("user_id", "NULL")
+        username = content.get("username", "NULL")
         hotel_id = content.get("hotel_id", "NULL")
         restaurant_id = content.get("restaurant_id", "NULL")
         star_number = content.get("star_number", "NULL")
         comment_content = content.get("comment_content", 'NULL')
-        user_query = cur.execute(f'''select * from users as r
-                        where r.user_id = {user_id};''').fetchall()
+        # print("🚀 ~ file: __init__.py:41 ~ user_query", username)
+        user_query = cur.execute(
+            f'''select * from users where name = "{username}"''').fetchall()
+        # print("🚀 ~ file: __init__.py:42 ~ user_query", user_query[0][0])
+        user_id = user_query[0][0]
         if hotel_id != "NULL":
             hotel_query = cur.execute(f'''select * from hotels as r
                         where r.hotel_id = {hotel_id};''').fetchall()
@@ -52,19 +55,21 @@ class CreateComments(Resource):
                 return namespace.abort(400, 'ID restaurant not found')
         if len(user_query) == 0:
             cur.close()
-            return namespace.abort(400, 'ID user not found')
+            return namespace.abort(400, 'User not found')
         else:
             current_time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-            # restaurant_id = None
+            restaurant_id = None
             if hotel_id != "NULL":
-                cmt = (user_id, comment_content, current_time, hotel_id, star_number)
+                cmt = (user_id, comment_content,
+                       current_time, hotel_id, star_number)
                 sql = '''INSERT INTO comments (user_id, comment_content, comment_time, hotel_id, star_number) VALUES (?, ?, ?, ?, ?);'''
                 cur.execute(sql, cmt)
             else:
-                cmt = (user_id, comment_content, current_time, restaurant_id, star_number)
+                cmt = (user_id, comment_content, current_time,
+                       restaurant_id, star_number)
                 sql = '''INSERT INTO comments (user_id, comment_content, comment_time, restaurant_id, star_number) VALUES (?, ?, ?, ?, ?);'''
                 cur.execute(sql, cmt)
-            
+
             con.commit()
         cur.close()
 
@@ -85,13 +90,13 @@ parser_plan.add_argument(
 parser_plan.add_argument(
     'star_number', type=int, help='star number (eg: 1)', location='json')
 
+
 @namespace.route('/edit', methods=['PUT'])
 class EditComment(Resource):
     @namespace.response(500, 'Internal Server error')
     @namespace.response(404, 'Not Found')
     @namespace.response(200, 'Success')
     @namespace.expect(parser_plan, validate=True)
-
     def put(self):
         con = sqlite3.connect('database.db')
         cur = con.cursor()
@@ -124,26 +129,31 @@ class EditComment(Resource):
             if len(restaurant_query) == 0:
                 cur.close()
                 return namespace.abort(400, 'ID restaurant not found')
-        
+
         else:
             current_time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
             # restaurant_id = None
             if hotel_id != "NULL":
-                cmt = (user_id, comment_content, current_time, hotel_id, star_number, comment_id)
+                cmt = (user_id, comment_content, current_time,
+                       hotel_id, star_number, comment_id)
                 sql = '''UPDATE comments SET user_id= ?, comment_content= ?, comment_time= ?, hotel_id= ?, star_number= ? where comment_id=?;'''
                 cur.execute(sql, cmt)
             else:
-                cmt = (user_id, comment_content, current_time, restaurant_id, star_number, comment_id)
+                cmt = (user_id, comment_content, current_time,
+                       restaurant_id, star_number, comment_id)
                 sql = '''UPDATE comments SET user_id= ?, comment_content= ?, comment_time= ?, restaurant_id= ?, star_number= ? where comment_id=?;'''
                 cur.execute(sql, cmt)
-            
+
             con.commit()
         cur.close()
 
         return "Update comment successfully"
 
+
 parser_delete = reqparse.RequestParser()
 parser_delete.add_argument('id', type=int, help='Comment\'s id (eg: 123)')
+
+
 @namespace.route('/delete', methods=['DELETE'])
 class DeleteComment(Resource):
     @namespace.response(500, 'Internal Server error')
@@ -171,6 +181,7 @@ class DeleteComment(Resource):
         cur.close()
         return 'Successfully Delete Comment'
 
+
 @namespace.route('/show')
 class ShowComment(Resource):
     @namespace.response(500, 'Internal Server error')
@@ -183,93 +194,104 @@ class ShowComment(Resource):
             "SELECT * FROM comments;").fetchall()
         if(len(plans_query) == 0):
             return namespace.abort(400, 'Not Found')
-        
+
         cur.close()
 
         return {'comments': plans_query}
 
+
 parser_id = reqparse.RequestParser()
 parser_id.add_argument('hotel_id', type=int, help='Hotel id')
+
+
 @namespace.route('/get_comments_by_hotel_id')
 class GetCommentByHotel(Resource):
     @namespace.response(500, 'Internal Server error')
     @namespace.response(400, 'Not Found')
     @namespace.response(200, 'Success')
-
-    @namespace.expect(parser_id) 
+    @namespace.expect(parser_id)
     def get(self):
         con = sqlite3.connect('database.db')
         cur = con.cursor()
-        hotel_id = request.args.get('hotel_id', default="NULL") #name = ao
+        hotel_id = request.args.get('hotel_id', default="NULL")  # name = ao
         if(hotel_id == "NULL"):
             return namespace.abort(400, 'Invalid value')
-        comment_query = cur.execute(f'select * from comments where comments.hotel_id={hotel_id} order by comment_time desc;').fetchall()
+        comment_query = cur.execute(
+            f'select * from comments where comments.hotel_id={hotel_id} order by comment_time desc;').fetchall()
         if(len(comment_query) == 0):
             return namespace.abort(400, 'Hotel Not Exists')
         comments = []
         for idx, cmt in enumerate(comment_query):
             comment = {}
             comment['comment_id'] = cmt[0]
-            user_name = cur.execute(f'select * from users where users.user_id={cmt[1]};').fetchall()[0][1]
+            user_name = cur.execute(
+                f'select * from users where users.user_id={cmt[1]};').fetchall()[0][1]
             comment['user_name'] = user_name
             comment['comment_content'] = cmt[2]
             comment['comment_time'] = cmt[3]
             comment['star_number'] = cmt[6]
             comments.append(comment)
-        
+
         cur.close()
 
         return {'comments': comments}
 
+
 parser_id = reqparse.RequestParser()
 parser_id.add_argument('hotel_id', type=int, help='Restaurant id')
+
+
 @namespace.route('/get_comments_by_restaurant_id')
 class GetCommentByRestaurant(Resource):
     @namespace.response(500, 'Internal Server error')
     @namespace.response(400, 'Not Found')
     @namespace.response(200, 'Success')
-
-    @namespace.expect(parser_id) 
+    @namespace.expect(parser_id)
     def get(self):
         con = sqlite3.connect('database.db')
         cur = con.cursor()
-        hotel_id = request.args.get('hotel_id', default="NULL") #name = ao
+        hotel_id = request.args.get('hotel_id', default="NULL")  # name = ao
         if(hotel_id == "NULL"):
             return namespace.abort(400, 'Invalid value')
-        comment_query = cur.execute(f'select * from comments where comments.restaurant_id={hotel_id} order by comment_time desc;').fetchall()
+        comment_query = cur.execute(
+            f'select * from comments where comments.restaurant_id={hotel_id} order by comment_time desc;').fetchall()
         if(len(comment_query) == 0):
             return namespace.abort(400, 'Hotel Not Exists')
         comments = []
         for idx, cmt in enumerate(comment_query):
             comment = {}
             comment['comment_id'] = cmt[0]
-            user_name = cur.execute(f'select * from users where users.user_id={cmt[1]};').fetchall()[0][1]
+            user_name = cur.execute(
+                f'select * from users where users.user_id={cmt[1]};').fetchall()[0][1]
             comment['user_name'] = user_name
             comment['comment_content'] = cmt[2]
             comment['comment_time'] = cmt[3]
             comment['star_number'] = cmt[6]
             comments.append(comment)
-        
+
         cur.close()
 
         return {'comments': comments}
 
+
 parser_id = reqparse.RequestParser()
 parser_id.add_argument('plan_id', type=int, help='Hotel id')
+
+
 @namespace.route('/get_avg_star_by_hotel_id')
 class GetAVGStarByHotel(Resource):
     @namespace.response(500, 'Internal Server error')
     @namespace.response(400, 'Not Found')
     @namespace.response(200, 'Success')
-
     @namespace.expect(parser_id)
     def get(self):
         con = sqlite3.connect('database.db')
         cur = con.cursor()
-        plan_id = request.args.get('plan_id', default="NULL") #name = ao
+        plan_id = request.args.get('plan_id', default="NULL")  # name = ao
         if(plan_id == "NULL"):
             return namespace.abort(400, 'Invalid value')
-        comment_query = cur.execute(f'select * from comments where comments.hotel_id={plan_id};').fetchall()
+        comment_query = cur.execute(
+            f'select * from comments where comments.hotel_id={plan_id};').fetchall()
         if(len(comment_query) == 0):
             return namespace.abort(400, 'Plan Not Exists')
         else:
@@ -277,24 +299,27 @@ class GetAVGStarByHotel(Resource):
             if len(stars) == 0:
                 return {'avg_star': 0}
             else:
-                return {'avg_star':sum(stars)/len(stars)}
+                return {'avg_star': sum(stars)/len(stars)}
+
 
 parser_id = reqparse.RequestParser()
 parser_id.add_argument('plan_id', type=int, help='Restaurant id')
+
+
 @namespace.route('/get_avg_star_by_restaurant_id')
 class GetAVGStarByRestaurant(Resource):
     @namespace.response(500, 'Internal Server error')
     @namespace.response(400, 'Not Found')
     @namespace.response(200, 'Success')
-
     @namespace.expect(parser_id)
     def get(self):
         con = sqlite3.connect('database.db')
         cur = con.cursor()
-        plan_id = request.args.get('plan_id', default="NULL") #name = ao
+        plan_id = request.args.get('plan_id', default="NULL")  # name = ao
         if(plan_id == "NULL"):
             return namespace.abort(400, 'Invalid value')
-        comment_query = cur.execute(f'select * from comments where comments.restaurant_id={plan_id};').fetchall()
+        comment_query = cur.execute(
+            f'select * from comments where comments.restaurant_id={plan_id};').fetchall()
         if(len(comment_query) == 0):
             return namespace.abort(400, 'Plan Not Exists')
         else:
@@ -302,4 +327,4 @@ class GetAVGStarByRestaurant(Resource):
             if len(stars) == 0:
                 return {'avg_star': 0}
             else:
-                return {'avg_star':sum(stars)/len(stars)}
+                return {'avg_star': sum(stars)/len(stars)}
