@@ -84,10 +84,10 @@ cur.execute('''INSERT INTO users (user_id, name, email, password, image_url) VAL
 (2, 'admin', 'admin@gmail.com', 'admin', 'http://halongcity.gov.vn/ckfinder/userfiles/images/2022/05/Loan/hanh/ltdl%20vinh%20HL.jpg');''')
 
 cur.execute('''INSERT INTO comments (comment_id, user_id, comment_content, comment_time, restaurant_id, hotel_id, star_number) VALUES
-(1, 1, 'ngon', '2023‑09‑25 17:48:30.005', 1,null, 5),
+(1, 1, 'ngon', '2023‑01‑25 17:48:30.005', 1,null, 5),
 (2, 2, 'tuyet voi', '1986‑09‑25 17:45:30.005', 1,null, 4),
 (3, 2, 'tuyet voi', '1985‑09‑25 17:45:30.005', 2,null, 4),
-(4, 1, 'Rat dang trai nghiem', '2023‑09‑25 8:45:30.005',null, 2, 3),
+(4, 1, 'Rat dang trai nghiem', '2023‑01‑25 8:45:30.005',null, 2, 3),
 (5, 1, 'Rat dang trai nghiem', '1995‑09‑25 1:45:30.005',null, 1, 5),
 (6, 1, 'Rat dang trai nghiem', '1985‑09‑25 17:45:30.005',null, 1, 3);''')
 

@@ -58,7 +58,6 @@ class CreateComments(Resource):
             return namespace.abort(400, 'User not found')
         else:
             current_time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-            restaurant_id = None
             if hotel_id != "NULL":
                 cmt = (user_id, comment_content,
                        current_time, hotel_id, star_number)
