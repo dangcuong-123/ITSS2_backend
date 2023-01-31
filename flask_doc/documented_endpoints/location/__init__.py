@@ -250,21 +250,21 @@ class SearchByNameProvince(Resource):
         return respon
 
 
-parser_id = reqparse.RequestParser()
-parser_id.add_argument('location_id', type=int, help='Location id')
+# parser_id = reqparse.RequestParser()
+# parser_id.add_argument('location_id', type=int, help='Location id')
 
 
-@namespace.route('/get_location_by_id')
+@namespace.route('/get_location_by_id/<location_id>')
 class GetLocationById(Resource):
     @namespace.response(500, 'Internal Server error')
     @namespace.response(400, 'Not Found')
     @namespace.response(200, 'Success')
-    @namespace.expect(parser_id)
-    def get(self):
+    # @namespace.expect(parser_id)
+    def get(self, location_id):
         con = sqlite3.connect('database.db')
         cur = con.cursor()
-        location_id = request.args.get(
-            'location_id', default="NULL")  # name = ao
+        # location_id = request.args.get(
+        #     'location_id', default="NULL")  # name = ao
         if(location_id == "NULL"):
             return namespace.abort(400, 'Invalid value')
         location_query = cur.execute(

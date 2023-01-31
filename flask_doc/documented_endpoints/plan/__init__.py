@@ -1,9 +1,65 @@
-from flask import request
+from flask import request, redirect, url_for
 from flask_restx import Namespace, Resource, reqparse
 import sqlite3
 import json
 
 namespace = Namespace('plan', 'Plan Information')
+
+def responses_location(fetchdata, cur):
+    results = []
+    keys = ['location_id', 'location_name', 'location_description',
+            'location_address', 'image_url', 'tags', 'loc_province', 'train', 'car', 'ship', 'motorbike']
+
+    for idx, record in enumerate(fetchdata):
+        result = {}
+        for x, i in enumerate(record):
+            result[keys[x]] = i
+        tags_query = cur.execute(
+            "SELECT * FROM tags_loc WHERE tags_loc.location_id={};".format(record[0])).fetchall()
+        if(len(tags_query) != 0):
+            result['tags'] = [tag[1] for tag in tags_query]
+        else:
+            result['tags'] = []
+        transport_query = cur.execute(
+            "SELECT * FROM rcm_transport WHERE rcm_transport_id={};".format(record[5])).fetchall()
+        result['train'] = transport_query[0][1]
+        result['car'] = transport_query[0][2]
+        result['ship'] = transport_query[0][3]
+        result['motorbike'] = transport_query[0][4]
+        results.append(result)
+    return results
+
+def responses_hotel(fetchdata, type):
+    results = []
+    if type == 'restaurants':
+        keys = ['restaurant_id', 'restaurant_name', 'restaurant_address', 'hotel_id',
+        'image_url', 'restaurant_fee', 'restaurant_open_time', 'restaurant_description',
+        'menu_description', 'menu_img_url']
+    else:
+        keys = ['hotel_id', 'hotel_name', 'hotel_address', 'location_id',
+                'image_url', 'hotel_fee', 'hotel_description']
+    for record in fetchdata:
+        result = {}
+        for x, i in enumerate(record):
+            result[keys[x]] = i
+        results.append(result)
+    return results
+
+def responses_restaurant(fetchdata, type):
+    results = []
+    if type == 'restaurants':
+        keys = ['restaurant_id', 'restaurant_name', 'restaurant_address', 'hotel_id',
+        'image_url', 'restaurant_fee', 'restaurant_open_time', 'restaurant_description',
+        'menu_description', 'menu_img_url']
+    else:
+        keys = ['hotel_id', 'hotel_name', 'hotel_address', 'location_id',
+                'image_url', 'hotel_fee', 'hotel_description']
+    for record in fetchdata:
+        result = {}
+        for x, i in enumerate(record):
+            result[keys[x]] = i
+        results.append(result)
+    return results
 
 parser_name = reqparse.RequestParser()
 parser_name.add_argument('location_name', type=str, help='Location\'s name (eg: ha long)')
@@ -243,26 +299,26 @@ class GetPlansByUserId(Resource):
                 pl_query = cur.execute(
             f"SELECT * FROM plans where plans.plan_id={pl_id};").fetchall()[0]
                 for i, val in enumerate(pl_query):
-                    if i==1:
+                    if i==0:
                         plan['plan_id'] = pl_id
                     elif i==1:
-                        loc_query = cur.execute(f"SELECT location_name FROM tourist_destination where tourist_destination.location_id={val};").fetchall()
+                        loc_query = cur.execute(f"SELECT * FROM tourist_destination where tourist_destination.location_id={val};").fetchall()
                         if len(loc_query) != 0:
-                            plan['location_name'] = loc_query[0][0]
+                            plan['location'] = responses_location(loc_query, cur)
                         else:
-                            plan['location_name'] = 'None'
+                            plan['location'] = 'None'
                     elif i==2:
-                        loc_query = cur.execute(f"SELECT hotel_name FROM hotels where hotels.hotel_id={val};").fetchall()
+                        hotels_query = cur.execute(f"SELECT * FROM hotels where hotels.hotel_id={val};").fetchall()
                         if len(loc_query) != 0:
-                            plan['hotel_name'] = loc_query[0][0]
+                            plan['hotel'] = responses_hotel(hotels_query, 'hotels')
                         else:
-                            plan['hotel_name'] = 'None'
+                            plan['hotel'] = 'None'
                     elif i==3:
-                        loc_query = cur.execute(f"SELECT restaurant_name FROM restaurants where restaurants.restaurant_id={val};").fetchall()
+                        restaurants_query = cur.execute(f"SELECT * FROM restaurants where restaurants.restaurant_id={val};").fetchall()
                         if len(loc_query) != 0:
-                            plan['restaurant_name'] = loc_query[0][0]
+                            plan['restaurant'] = responses_restaurant(restaurants_query, 'restaurants')
                         else:
-                            plan['restaurant_name'] = 'None'
+                            plan['restaurant'] = 'None'
                 
                 plans.append(plan)
         
