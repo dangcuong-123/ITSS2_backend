@@ -70,7 +70,6 @@ parser_create.add_argument(
 parser_create.add_argument(
     'tags', type=str, help='''"[\"Reading\",\"Sketching\", \"Horse Riding\"]"''', location='json')
 
-
 @namespace.route('/create', methods=['POST'])
 class CreateLocation(Resource):
     @namespace.response(500, 'Internal Server error')

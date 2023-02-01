@@ -29,7 +29,7 @@ parser_edit.add_argument(
 parser_edit.add_argument(
     'hotel_address_input', type=str, help='hotel address input (eg: 18 duong Vo Cong)', location='json')
 parser_edit.add_argument(
-    'hotel_address_select', type=str, help='hotel address select (eg: ha noi)', location='json')
+    'location_name', type=str, help='hotel address select (eg: ha noi)', location='json')
 parser_edit.add_argument(
     'image_url', type=str, help='image hotels', location='json')
 parser_edit.add_argument(
@@ -67,7 +67,7 @@ class EditHotel(Resource):
 
         if(hotel_address_select != None):
             cur.execute(
-                "SELECT location_id FROM tourist_destination WHERE location_address like '%{}%';".format(hotel_address_select))
+                "SELECT location_id FROM tourist_destination WHERE location_name like '%{}%';".format(hotel_address_select))
             fetchdata = cur.fetchall()
 
             if(len(fetchdata) == 0):
@@ -142,7 +142,7 @@ parser_hotels.add_argument(
 parser_hotels.add_argument(
     'hotel_address_input', type=str, help='hotel address input (eg: 18 duong Vo Cong)', location='json')
 parser_hotels.add_argument(
-    'hotel_address_select', type=str, help='hotel address select (eg: ha noi)', location='json')
+    'location_name', type=str, help='hotel address select (eg: ha noi)', location='json')
 parser_hotels.add_argument(
     'image_url', type=str, help='image hotels', location='json')
 parser_hotels.add_argument(
@@ -168,7 +168,7 @@ class CreateHotels(Resource):
 
         if(hotel_address_select != None):
             cur.execute(
-                "SELECT location_id FROM tourist_destination WHERE location_address like '%{}%';".format(hotel_address_select))
+                "SELECT location_id FROM tourist_destination WHERE location_name like '%{}%';".format(hotel_address_select))
             fetchdata = cur.fetchall()
 
             if(len(fetchdata) == 0):
