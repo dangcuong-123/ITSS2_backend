@@ -110,6 +110,8 @@ class SearchByNameTags(Resource):
             rels = list(set(list_ok[0]).union(*list_ok))
             ress = []
             hots = []
+            if len(rels) == 0:
+                return namespace.abort(400, 'No result')
             for rel in rels:
                 restaurants_query = cur.execute(f'''select * from restaurants as r
                             where r.hotel_id in (select h.hotel_id from hotels as h
@@ -134,12 +136,17 @@ class SearchByNameTags(Resource):
             list_ok = [dict_loc_tag[tag] for tag in tags]
             list_ok_union = list(set(list_ok[0]).union(*list_ok))
             loc_name = loc_name.lower()
-            loc_que = cur.execute(f'''select location_id from tourist_destination where loc_province like '%{loc_name}%' COLLATE NOCASE;''').fetchall()[0]
+            loc_que = cur.execute(f'''select location_id from tourist_destination where loc_province like '%{loc_name}%' COLLATE NOCASE;''').fetchall()
+            if len(loc_que) == 0:
+                return namespace.abort(400, 'No result')
+            loc_que = loc_que[0]
             loc_que = list(loc_que)
             merge = [list_ok_union,loc_que]
             rels = list(set(merge[0]).intersection(*merge))
             ress = []
             hots = []
+            if len(rels) == 0:
+                return namespace.abort(400, 'No result')
             for rel in rels:
                 restaurants_query = cur.execute(f'''select * from restaurants as r
                             where r.hotel_id in (select h.hotel_id from hotels as h
