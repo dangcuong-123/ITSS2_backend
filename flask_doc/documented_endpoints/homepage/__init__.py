@@ -106,7 +106,12 @@ class SearchByNameTags(Resource):
                     dict_loc_tag[loc_tag[1]] = [loc_tag[2]]
                 else:
                     dict_loc_tag[loc_tag[1]].append(loc_tag[2])
-            list_ok = [dict_loc_tag[tag] for tag in tags]
+            list_ok = []
+            for tag in tags:
+                if tag in dict_loc_tag.keys():
+                    list_ok.append(dict_loc_tag[tag])
+                else:
+                    list_ok.append([])
             rels = list(set(list_ok[0]).union(*list_ok))
             ress = []
             hots = []
