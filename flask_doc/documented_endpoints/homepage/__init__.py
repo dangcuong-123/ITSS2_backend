@@ -138,7 +138,7 @@ class SearchByNameTags(Resource):
                     dict_loc_tag[loc_tag[1]] = [loc_tag[2]]
                 else:
                     dict_loc_tag[loc_tag[1]].append(loc_tag[2])
-            list_ok = [dict_loc_tag[tag] for tag in tags]
+            list_ok = [dict_loc_tag[tag] for tag in tags if tag in dict_loc_tag.keys()]
             list_ok_union = list(set(list_ok[0]).union(*list_ok))
             loc_name = loc_name.lower()
             loc_que = cur.execute(f'''select location_id from tourist_destination where loc_province like '%{loc_name}%' COLLATE NOCASE;''').fetchall()
