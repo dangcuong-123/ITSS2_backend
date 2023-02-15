@@ -205,7 +205,7 @@ class DeleteLocation(Resource):
         cur.execute(
             "SELECT * FROM plans_vs_users WHERE id = {};".format(id))
         fetchdata = cur.fetchall()
-
+        print(fetchdata)
         if(len(fetchdata) == 0):
             cur.close()
             return namespace.abort(400, 'ID location not found')
@@ -267,8 +267,8 @@ class ShowPlans(Resource):
         return {'plans': plans}
 
 parser_id = reqparse.RequestParser()
-parser_id.add_argument('user_id', type=int, help='User id')
-@namespace.route('/get_plans_by_user_id')
+parser_id.add_argument('user_name', type=str, help='User id')
+@namespace.route('/get_plans_by_user_name')
 class GetPlansByUserId(Resource):
     @namespace.response(500, 'Internal Server error')
     @namespace.response(400, 'Not Found')
@@ -278,9 +278,13 @@ class GetPlansByUserId(Resource):
     def get(self):
         con = sqlite3.connect('database.db')
         cur = con.cursor()
-        user_id = request.args.get('user_id', default="NULL") #name = ao
-        if(user_id == "NULL"):
+        user_name = request.args.get('user_name', default="NULL") #name = ao
+        if(user_name == "NULL"):
             return namespace.abort(400, 'Invalid value')
+        user_query = cur.execute(f'select * from users where users.name=\'{user_name}\';').fetchall()
+        if(len(user_query) == 0):
+            return namespace.abort(400, 'User Not Exists')
+        user_id = user_query[0][0]
         user_query = cur.execute(f'select * from users where users.user_id={user_id};').fetchall()
         if(len(user_query) == 0):
             return namespace.abort(400, 'User Not Exists')
