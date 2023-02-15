@@ -143,7 +143,8 @@ cur.execute('''INSERT INTO tags_loc (id, tag_name, location_id) VALUES
 (2, 'danh lam thang canh', 1),
 (3, 'chua', 2),
 (4, 'danh lam thang canh', 2),
-(5, 'nui', 2);''')
+(5, 'hang dong', 1),
+(6, 'nui', 2);''')
 
 con.commit()
 con.close()
